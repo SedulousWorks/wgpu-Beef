@@ -1,8 +1,14 @@
 FileVersion = 1
 
 [Workspace]
-StartupProject = "wgpu-Beef-Test"
+StartupProject = "wgpu-Beef-Test-Web"
 
 [Projects]
 wgpu-Beef = {Path = "."}
-wgpu-Beef-Test = {Path = "wgpu-Beef-Test"}
+wgpu-Beef-Test-Web = {Path = "wgpu-Beef-Test-Web"}
+
+[Configs.Debug.wasm32]
+AllocType = "CRT"
+EnableObjectDebugFlags = false
+EmitObjectAccessCheck = false
+ConfigSelections = {wgpu-Beef-Test = {Platform = "Win64"}}
