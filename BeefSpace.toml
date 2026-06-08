@@ -1,0 +1,8 @@
+FileVersion = 1
+
+[Workspace]
+StartupProject = "wgpu-Beef-Test"
+
+[Projects]
+wgpu-Beef = {Path = "."}
+wgpu-Beef-Test = {Path = "wgpu-Beef-Test"}

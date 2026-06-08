@@ -1,0 +1,9 @@
+FileVersion = 1
+
+[Project]
+Name = "wgpu-Beef-Test"
+StartupObject = "wgpu_Beef_Test.Program"
+
+[Dependencies]
+corlib = "*"
+wgpu-Beef = "*"
