@@ -57,7 +57,7 @@ class Program
 		}
 		defer SDL.Quit();
 
-		let window = SDL.CreateWindow("wgpu-Beef triangle", .Centered, .Centered, WIDTH, HEIGHT, .Shown);
+		let window = SDL.CreateWindow("wgpu-Beef triangle", .Centered, .Centered, WIDTH, HEIGHT, .Shown | .Resizable);
 		if (window == null)
 		{
 			Console.WriteLine("SDL_CreateWindow failed");
@@ -119,10 +119,22 @@ class Program
 		let queue = wgpuDeviceGetQueue(sDevice);
 		defer wgpuQueueRelease(queue);
 
-		// --- 6. Configure the surface ---
-		// BGRA8Unorm is the standard, always-available surface format on Windows.
-		let surfaceFormat = WGPUTextureFormat.WGPUTextureFormat_BGRA8Unorm;
+		// --- 6. Pick a surface format/alpha mode from what the adapter supports ---
+		// BGRA8Unorm is used as a fallback if the query fails for some reason.
+		var surfaceFormat = WGPUTextureFormat.WGPUTextureFormat_BGRA8Unorm;
+		var alphaMode = WGPUCompositeAlphaMode.WGPUCompositeAlphaMode_Auto;
+		WGPUSurfaceCapabilities caps = .();
+		if (wgpuSurfaceGetCapabilities(surface, sAdapter, &caps) == .WGPUStatus_Success)
+		{
+			// formats and alphaModes are listed in order of preference; [0] is best.
+			if (caps.formatCount > 0)
+				surfaceFormat = caps.formats[0];
+			if (caps.alphaModeCount > 0)
+				alphaMode = caps.alphaModes[0];
+			wgpuSurfaceCapabilitiesFreeMembers(caps);
+		}
 
+		// --- 7. Configure the surface ---
 		WGPUSurfaceConfiguration config = .();
 		config.device = sDevice;
 		config.format = surfaceFormat;
@@ -130,11 +142,11 @@ class Program
 		config.width = (uint32)WIDTH;
 		config.height = (uint32)HEIGHT;
 		config.presentMode = .WGPUPresentMode_Fifo;
-		config.alphaMode = .WGPUCompositeAlphaMode_Auto;
+		config.alphaMode = alphaMode;
 		wgpuSurfaceConfigure(surface, &config);
 		defer wgpuSurfaceUnconfigure(surface);
 
-		// --- 7. Compile the shader module ---
+		// --- 8. Compile the shader module ---
 		WGPUShaderSourceWGSL wgslSource = .();
 		wgslSource.chain.sType = .WGPUSType_ShaderSourceWGSL;
 		wgslSource.code = SV(SHADER_WGSL);
@@ -144,7 +156,7 @@ class Program
 		let shader = wgpuDeviceCreateShaderModule(sDevice, &shaderDesc);
 		defer wgpuShaderModuleRelease(shader);
 
-		// --- 8. Build the render pipeline ---
+		// --- 9. Build the render pipeline ---
 		WGPUColorTargetState colorTarget = .();
 		colorTarget.format = surfaceFormat;
 		colorTarget.writeMask = WGPUColorWriteMask_All;
@@ -165,7 +177,7 @@ class Program
 		let pipeline = wgpuDeviceCreateRenderPipeline(sDevice, &pipelineDesc);
 		defer wgpuRenderPipelineRelease(pipeline);
 
-		// --- 9. Main loop ---
+		// --- 10. Main loop ---
 		bool running = true;
 		while (running)
 		{
@@ -173,14 +185,43 @@ class Program
 			while (SDL.PollEvent(out event) != 0)
 			{
 				if (event.type == .Quit)
+				{
 					running = false;
+				}
+				else if ((event.type == .WindowEvent) && (event.window.windowEvent == .SizeChanged))
+				{
+					// Window was resized: resize the swapchain to match.
+					config.width = (uint32)event.window.data1;
+					config.height = (uint32)event.window.data2;
+					if ((config.width > 0) && (config.height > 0))
+						wgpuSurfaceConfigure(surface, &config);
+				}
 			}
+
+			// Skip rendering while minimized (zero-sized surface).
+			if ((config.width == 0) || (config.height == 0))
+				continue;
 
 			WGPUSurfaceTexture surfaceTex = .();
 			wgpuSurfaceGetCurrentTexture(surface, &surfaceTex);
-			if (surfaceTex.status != .WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal &&
-				surfaceTex.status != .WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal)
+			let status = surfaceTex.status;
+			if ((status == .WGPUSurfaceGetCurrentTextureStatus_Timeout) ||
+				(status == .WGPUSurfaceGetCurrentTextureStatus_Outdated) ||
+				(status == .WGPUSurfaceGetCurrentTextureStatus_Lost))
+			{
+				// Transient: reconfigure (e.g. after a resize) and try again next frame.
+				if (surfaceTex.texture != null)
+					wgpuTextureRelease(surfaceTex.texture);
+				wgpuSurfaceConfigure(surface, &config);
 				continue;
+			}
+			if ((status != .WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal) &&
+				(status != .WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal))
+			{
+				if (surfaceTex.texture != null)
+					wgpuTextureRelease(surfaceTex.texture);
+				continue;
+			}
 
 			let view = wgpuTextureCreateView(surfaceTex.texture, null);
 			let encoder = wgpuDeviceCreateCommandEncoder(sDevice, null);
