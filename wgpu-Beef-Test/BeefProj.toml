@@ -7,3 +7,4 @@ StartupObject = "wgpu_Beef_Test.Program"
 [Dependencies]
 corlib = "*"
 wgpu-Beef = "*"
+SDL2 = "*"
