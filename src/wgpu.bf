@@ -881,9 +881,9 @@ enum WGPUNativeDisplayHandleType : int32
 [CRepr] struct WGPUXlibDisplayHandle
 {
 	/** Pointer to the X11 @c Display (i.e. @c Display*). Must not be NULL. */
-	void* display;
+	public void* display;
 	/** X11 screen number. */
-	int screen;
+	public int screen;
 }
 
 /**
@@ -892,9 +892,9 @@ enum WGPUNativeDisplayHandleType : int32
 [CRepr] struct WGPUXcbDisplayHandle
 {
 	/** Pointer to the XCB connection (i.e. @c xcb_connection_t*). Must not be NULL. */
-	void* connection;
+	public void* connection;
 	/** X11 screen number. */
-	int screen;
+	public int screen;
 }
 
 /**
@@ -903,7 +903,7 @@ enum WGPUNativeDisplayHandleType : int32
 [CRepr] struct WGPUWaylandDisplayHandle
 {
 	/** Pointer to the Wayland display (i.e. @c wl_display*). Must not be NULL. */
-	void* display;
+	public void* display;
 }
 
 /**
@@ -919,74 +919,74 @@ enum WGPUNativeDisplayHandleType : int32
  */
 [CRepr] struct WGPUNativeDisplayHandle
 {
-	WGPUNativeDisplayHandleType type;
+	public WGPUNativeDisplayHandleType type;
 	[Union] public struct
 	{
-		WGPUXlibDisplayHandle xlib;
-		WGPUXcbDisplayHandle xcb;
-		WGPUWaylandDisplayHandle wayland;
+		public WGPUXlibDisplayHandle xlib;
+		public WGPUXcbDisplayHandle xcb;
+		public WGPUWaylandDisplayHandle wayland;
 	} data;
 }
 
 [CRepr] struct WGPUInstanceExtras
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * Which backends to enable.
 	 * Zero (@ref WGPUInstanceBackend_All) enables all backends.
 	 */
-	WGPUInstanceBackend backends;
+	public WGPUInstanceBackend backends;
 	/**
 	 * Flags controlling debug/validation behavior.
 	 * See @ref WGPUInstanceFlag for available flags.
 	 */
-	WGPUInstanceFlag flags;
+	public WGPUInstanceFlag flags;
 	/**
 	 * Which DX12 shader compiler to use.
 	 * See @ref WGPUDx12Compiler. Ignored on non-DX12 backends.
 	 */
-	WGPUDx12Compiler dx12ShaderCompiler;
+	public WGPUDx12Compiler dx12ShaderCompiler;
 	/**
 	 * Which OpenGL ES 3 minor version to request.
 	 * See @ref WGPUGles3MinorVersion. Ignored on non-GL backends.
 	 */
-	WGPUGles3MinorVersion gles3MinorVersion;
+	public WGPUGles3MinorVersion gles3MinorVersion;
 	/**
 	 * Controls OpenGL fence synchronization behavior.
 	 * See @ref WGPUGLFenceBehaviour. Ignored on non-GL backends.
 	 */
-	WGPUGLFenceBehaviour glFenceBehaviour;
+	public WGPUGLFenceBehaviour glFenceBehaviour;
 	/**
 	 * File system path to @c dxcompiler.dll for dynamic DXC loading.
 	 * Only used when @c dx12ShaderCompiler is @ref WGPUDx12Compiler_Dxc.
 	 * An empty/undefined string view means the DLL will be searched for
 	 * on the system PATH.
 	 */
-	WGPUStringView dxcPath;
+	public WGPUStringView dxcPath;
 	/**
 	 * Maximum HLSL shader model version that DXC should target.
 	 * See @ref WGPUDxcMaxShaderModel. Only used with the DXC compiler.
 	 */
-	WGPUDxcMaxShaderModel dxcMaxShaderModel;
+	public WGPUDxcMaxShaderModel dxcMaxShaderModel;
 	/**
 	 * Which DX12 presentation system (swapchain kind) to use.
 	 * See @ref WGPUDx12SwapchainKind. Ignored on non-DX12 backends.
 	 */
-	WGPUDx12SwapchainKind dx12PresentationSystem;
+	public WGPUDx12SwapchainKind dx12PresentationSystem;
 
-	uint8* budgetForDeviceCreation;
-	uint8* budgetForDeviceLoss;
+	public uint8* budgetForDeviceCreation;
+	public uint8* budgetForDeviceLoss;
 
 	/**
 	 * Platform display connection to associate with this instance.
 	 * Zero-initialized yields @ref WGPUNativeDisplayHandleType_None (no handle).
 	 */
-	WGPUNativeDisplayHandle displayHandle;
+	public WGPUNativeDisplayHandle displayHandle;
 }
 
 [CRepr] struct WGPUDeviceExtras
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * File system path for API trace output.
 	 *
@@ -994,13 +994,13 @@ enum WGPUNativeDisplayHandleType : int32
 	 * the given directory, which can later be replayed for debugging.
 	 * An empty/undefined string view disables tracing.
 	 */
-	WGPUStringView tracePath;
+	public WGPUStringView tracePath;
 }
 
 [CRepr] struct WGPUNativeLimits
 {
 	/** This struct chain is used as mutable in some places and immutable in others. */
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * Amount of storage available for immediate data, in bytes.
 	 *
@@ -1012,7 +1012,7 @@ enum WGPUNativeDisplayHandleType : int32
 	 * - Metal: 4096 bytes
 	 * - OpenGL: ~256 bytes (emulated with uniforms)
 	 */
-	uint32 maxImmediateSize;
+	public uint32 maxImmediateSize;
 	/**
 	 * Maximum number of live non-sampler bindings.
 	 *
@@ -1021,17 +1021,17 @@ enum WGPUNativeDisplayHandleType : int32
 	 * @b Warning: On integrated GPUs, large values can cause significant
 	 * system RAM consumption.
 	 */
-	uint32 maxNonSamplerBindings;
+	public uint32 maxNonSamplerBindings;
 	/**
 	 * Maximum number of individual resources within binding arrays per
 	 * shader stage.
 	 */
-	uint32 maxBindingArrayElementsPerShaderStage;
+	public uint32 maxBindingArrayElementsPerShaderStage;
 }
 
 [CRepr] struct WGPUPipelineLayoutExtras
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * The number of bytes of immediate data allocated for use in shaders
 	 * attached to this pipeline.
@@ -1040,7 +1040,7 @@ enum WGPUNativeDisplayHandleType : int32
 	 * smaller than this size. If this value is non-zero,
 	 * @ref WGPUNativeFeature_Immediates must be enabled.
 	 */
-	uint32 immediateDataSize;
+	public uint32 immediateDataSize;
 }
 
 /**
@@ -1056,104 +1056,104 @@ typealias WGPUSubmissionIndex = uint64;
 
 [CRepr] struct WGPUShaderDefine
 {
-	WGPUStringView name;
+	public WGPUStringView name;
 	/** The value of the preprocessor macro (e.g. @c "1"). */
-	WGPUStringView value;
+	public WGPUStringView value;
 }
 
 [CRepr] struct WGPUShaderSourceGLSL
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/** The shader stage this GLSL source targets. */
-	WGPUShaderStage stage;
+	public WGPUShaderStage stage;
 	/** GLSL source code. */
-	WGPUStringView code;
+	public WGPUStringView code;
 	/** Number of entries in @c defines. */
-	uint32 defineCount;
-	WGPUShaderDefine* defines;
+	public uint32 defineCount;
+	public WGPUShaderDefine* defines;
 }
 
 [CRepr] struct WGPUShaderModuleDescriptorSpirV
 {
-	WGPUStringView label;
+	public WGPUStringView label;
 	/** Number of 32-bit words in @c source. */
-	uint32 sourceSize;
-	uint32* source;
+	public uint32 sourceSize;
+	public uint32* source;
 }
 
 [CRepr] struct WGPURegistryReport
 {
-	uint numAllocated;
-	uint numKeptFromUser;
-	uint numReleasedFromUser;
-	uint elementSize;
+	public uint numAllocated;
+	public uint numKeptFromUser;
+	public uint numReleasedFromUser;
+	public uint elementSize;
 }
 
 [CRepr] struct WGPUHubReport
 {
-	WGPURegistryReport adapters;
-	WGPURegistryReport devices;
-	WGPURegistryReport queues;
-	WGPURegistryReport pipelineLayouts;
-	WGPURegistryReport shaderModules;
-	WGPURegistryReport bindGroupLayouts;
-	WGPURegistryReport bindGroups;
-	WGPURegistryReport commandBuffers;
-	WGPURegistryReport renderBundles;
-	WGPURegistryReport renderPipelines;
-	WGPURegistryReport computePipelines;
-	WGPURegistryReport pipelineCaches;
-	WGPURegistryReport querySets;
-	WGPURegistryReport buffers;
-	WGPURegistryReport textures;
-	WGPURegistryReport textureViews;
-	WGPURegistryReport samplers;
+	public WGPURegistryReport adapters;
+	public WGPURegistryReport devices;
+	public WGPURegistryReport queues;
+	public WGPURegistryReport pipelineLayouts;
+	public WGPURegistryReport shaderModules;
+	public WGPURegistryReport bindGroupLayouts;
+	public WGPURegistryReport bindGroups;
+	public WGPURegistryReport commandBuffers;
+	public WGPURegistryReport renderBundles;
+	public WGPURegistryReport renderPipelines;
+	public WGPURegistryReport computePipelines;
+	public WGPURegistryReport pipelineCaches;
+	public WGPURegistryReport querySets;
+	public WGPURegistryReport buffers;
+	public WGPURegistryReport textures;
+	public WGPURegistryReport textureViews;
+	public WGPURegistryReport samplers;
 }
 
 [CRepr] struct WGPUGlobalReport
 {
-	WGPURegistryReport surfaces;
+	public WGPURegistryReport surfaces;
 	/** Statistics for all other resource types, grouped by backend hub. */
-	WGPUHubReport hub;
+	public WGPUHubReport hub;
 }
 
 [CRepr] struct WGPUInstanceEnumerateAdapterOptions
 {
-	WGPUChainedStruct* nextInChain;
-	WGPUInstanceBackend backends;
+	public WGPUChainedStruct* nextInChain;
+	public WGPUInstanceBackend backends;
 }
 
 [CRepr] struct WGPUBindGroupEntryExtras
 {
-	WGPUChainedStruct chain;
-	WGPUBuffer* buffers;
-	uint bufferCount;
-	WGPUSampler* samplers;
-	uint samplerCount;
-	WGPUTextureView* textureViews;
-	uint textureViewCount;
+	public WGPUChainedStruct chain;
+	public WGPUBuffer* buffers;
+	public uint bufferCount;
+	public WGPUSampler* samplers;
+	public uint samplerCount;
+	public WGPUTextureView* textureViews;
+	public uint textureViewCount;
 }
 
 [CRepr] struct WGPUBindGroupLayoutEntryExtras
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * Number of resources in this binding array slot. Corresponds to the
 	 * array size in the shader (e.g. @c binding_array<T, @c N>).
 	 */
-	uint32 count;
+	public uint32 count;
 }
 
 [CRepr] struct WGPUQuerySetDescriptorExtras
 {
-	WGPUChainedStruct chain;
-	WGPUPipelineStatisticName* pipelineStatistics;
-	uint pipelineStatisticCount;
+	public WGPUChainedStruct chain;
+	public WGPUPipelineStatisticName* pipelineStatistics;
+	public uint pipelineStatisticCount;
 }
 
 [CRepr] struct WGPUSurfaceConfigurationExtras
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * Desired maximum number of frames in flight (i.e. the number of monitor
 	 * refreshes between @c wgpuSurfaceGetCurrentTexture and presentation).
@@ -1162,7 +1162,7 @@ typealias WGPUSubmissionIndex = uint64;
 	 * - 2: Balance between latency and throughput (the default).
 	 * - 3+: Maximize throughput.
 	 */
-	uint32 desiredMaximumFrameLatency;
+	public uint32 desiredMaximumFrameLatency;
 }
 
 /**
@@ -1170,12 +1170,12 @@ typealias WGPUSubmissionIndex = uint64;
  */
 [CRepr] struct WGPUSurfaceSourceSwapChainPanel
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * A pointer to the [`ISwapChainPanelNative`](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/win32/microsoft.ui.xaml.media.dxinterop/nn-microsoft-ui-xaml-media-dxinterop-iswapchainpanelnative)
 	 * interface of the SwapChainPanel that will be wrapped by the @ref WGPUSurface.
 	 */
-	void* panelNative;
+	public void* panelNative;
 }
 
 enum WGPUPolygonMode : int32
@@ -1195,19 +1195,19 @@ enum WGPUPolygonMode : int32
 
 [CRepr] struct WGPUPrimitiveStateExtras
 {
-	WGPUChainedStruct chain;
+	public WGPUChainedStruct chain;
 	/**
 	 * Controls the way each polygon is rasterized.
 	 * See @ref WGPUPolygonMode. Defaults to @ref WGPUPolygonMode_Fill.
 	 */
-	WGPUPolygonMode polygonMode;
+	public WGPUPolygonMode polygonMode;
 	/**
 	 * If set to true, the primitives are rendered with conservative
 	 * overestimation. Only valid when @c polygonMode is
 	 * @ref WGPUPolygonMode_Fill.
 	 * Requires @ref WGPUNativeFeature_ConservativeRasterization.
 	 */
-	WGPUBool conservative;
+	public WGPUBool conservative;
 }
 
 typealias WGPULogCallback = function void(WGPULogLevel level, WGPUStringView message, void* userdata);
