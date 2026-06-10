@@ -1,13 +1,13 @@
 # Setup & Build
 
-This repo contains the **wgpu-Beef** bindings (`src/webgpu.bf`, `src/wgpu.bf`) plus two samples that draw a triangle through the same bindings:
+This repo contains the **wgpu-Beef** bindings (`src/webgpu.bf`, `src/wgpu.bf`) and one sample, **`wgpu-Beef-Test`**, that draws a triangle and builds for two platforms from a single source (`wgpu-Beef-Test/src/Program.bf`):
 
-| Project | Platform | Windowing / Surface |
-|---|---|---|
-| `wgpu-Beef-Test` | Native (Win64) | SDL2 + `WGPUSurfaceSourceWindowsHWND` |
-| `wgpu-Beef-Test-Web` | Browser (wasm32) | Emscripten canvas (`WGPUEmscriptenSurfaceSourceCanvasHTMLSelector`) |
+| Platform | Build platform | Windowing / Surface | Loop |
+|---|---|---|---|
+| Native (Windows) | `Win64` | SDL2 + `WGPUSurfaceSourceWindowsHWND` | blocking SDL event loop |
+| Browser | `wasm32` | Emscripten canvas (`WGPUEmscriptenSurfaceSourceCanvasHTMLSelector`) | `emscripten_set_main_loop` |
 
-The GPU code (shader, pipeline, render pass) is identical between them; only window/surface creation, init flow, and the frame loop differ.
+The platform-specific bits are selected with `#if BF_PLATFORM_WASM`; the adapter/device setup, surface config, pipeline, and per-frame render are shared.
 
 ## Prerequisites
 
@@ -18,9 +18,9 @@ The GPU code (shader, pipeline, render pass) is identical between them; only win
 
 ## Native build (Windows / Win64)
 
-Everything is preconfigured — just build and run.
+Preconfigured — just build and run.
 
-- **IDE:** set `wgpu-Beef-Test` as the startup project and press **F5**. A window with an orange triangle appears.
+- **IDE:** with `wgpu-Beef-Test` as startup and platform **Win64**, press **F5**. A window with an orange triangle appears.
 - **CLI:**
   ```powershell
   & "C:\Program Files\BeefLang\bin\BeefBuild.exe" -workspace="<repo>" -config=Debug -platform=Win64
@@ -76,7 +76,8 @@ Create two forwarding shims in `C:\DEV\emsdk\upstream\emscripten`:
 
 ### 4. Build & run
 
-- Set `wgpu-Beef-Test-Web` as the startup project, platform **wasm32**, and run. Beef builds `dist/wgpu-Beef-Test-Web.{html,js,wasm}`, serves it with miniserve, and opens your browser to the triangle.
+- In the IDE, switch the platform to **wasm32** and run. Beef builds `wgpu-Beef-Test/dist/wgpu-Beef-Test.{html,js,wasm}`, serves it with miniserve, and opens your browser to the triangle.
+- **CLI:** `BeefBuild … -platform=wasm32` (the workspace enables `wasm32` via `ExtraPlatforms`).
 - The **first** wasm build downloads the emdawnwebgpu port from Dawn's GitHub releases (needs network; takes a little longer).
 - Requires a **WebGPU-capable browser** (recent Chrome/Edge; Firefox may need WebGPU enabled).
 
@@ -85,9 +86,9 @@ Create two forwarding shims in `C:\DEV\emsdk\upstream\emscripten`:
 ## Troubleshooting (web)
 
 - **`ERROR: Failed to execute "...emcc.bat"`** → missing shim; see step 3.
-- **miniserve 404 on `…html`** → the link didn't produce output (usually the `emcc.bat` issue). Inspect the recorded link command in `wgpu-Beef-Test-Web/dist/wgpu-Beef-Test-Web.html.build.txt`; you can re-run line 2 directly to see the real error:
+- **miniserve 404 on `…html`** → the link didn't produce output (usually the `emcc.bat` issue). Inspect the recorded link command in `wgpu-Beef-Test/dist/wgpu-Beef-Test.html.build.txt`; you can re-run line 2 directly to see the real error:
   ```powershell
-  $args = (Get-Content "<repo>\wgpu-Beef-Test-Web\dist\wgpu-Beef-Test-Web.html.build.txt")[1]
+  $args = (Get-Content "<repo>\wgpu-Beef-Test\dist\wgpu-Beef-Test.html.build.txt")[1]
   Set-Content link.rsp $args -NoNewline -Encoding ASCII
   & "C:\DEV\emsdk\upstream\emscripten\emcc.exe" "@link.rsp"
   ```

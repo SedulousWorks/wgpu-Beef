@@ -1,5 +1,6 @@
 BeefSpace_User.toml
 
+.claude/
 build/
 recovery/
-wgpu-Beef-Test-Web/dist
+wgpu-Beef-Test/dist
